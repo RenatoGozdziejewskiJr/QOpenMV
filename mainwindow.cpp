@@ -38,10 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     lbStatusBarCaption->setAlignment(Qt::AlignCenter);
     statusBar()->addWidget(lbStatusBarCaption);
 
-    stBar = new QStatusBar(ui->dockWidget);
-    //stBar->setGeometry(0, ui->dockWidget->height()-20, ui->dockWidget->width(), 20);
-    stBar->setFixedHeight(20);
-    ui->dockWidget->setWidget(stBar);
+
 
 
 
