@@ -38,12 +38,6 @@ MainWindow::MainWindow(QWidget *parent) :
     lbStatusBarCaption->setAlignment(Qt::AlignCenter);
     statusBar()->addWidget(lbStatusBarCaption);
 
-
-
-
-
-
-
 }
 
 MainWindow::~MainWindow()
@@ -94,7 +88,7 @@ void MainWindow::sltHandleTextBuffer(const QByteArray &data)
 void MainWindow::sltHandleCommandResult(QString result)
 {
     //qDebug() << result;  //to.. do.. tratar tipo de comando e resultado
-    ui->lbThreadResult->setText(result);
+    //ui->lbThreadResult->setText(result);
 }
 
 void MainWindow::sltHandleError(QString err)
