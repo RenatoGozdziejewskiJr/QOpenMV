@@ -20,8 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(openMV, SIGNAL(sgnlFinished()), openMV, SLOT(deleteLater()));
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
-    connect(openMV, SIGNAL(sgnlCommandResult(QString)), this, SLOT(sltHandleCommandResult(QString)) );
-    thread->start();  //the thread just will be stopped when the application is going to terminate.
+    thread->start();
     //thread->setPriority(QThread::InheritPriority);
     //thread->setPriority(QThread::HighPriority);
     thread->setPriority(QThread::TimeCriticalPriority);
@@ -35,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(tmUpdate, SIGNAL(timeout()), this, SLOT(sltTimerUpdate()));
 
     lbStatusBarCaption = new QLabel(this);
+    lbStatusBarCaption->setFrameShape(QFrame::Box);
     lbStatusBarCaption->setAlignment(Qt::AlignCenter);
     statusBar()->addWidget(lbStatusBarCaption);
 
@@ -85,11 +85,6 @@ void MainWindow::sltHandleTextBuffer(const QByteArray &data)
 
 }
 
-void MainWindow::sltHandleCommandResult(QString result)
-{
-    //qDebug() << result;  //to.. do.. tratar tipo de comando e resultado
-    //ui->lbThreadResult->setText(result);
-}
 
 void MainWindow::sltHandleError(QString err)
 {
@@ -136,6 +131,9 @@ void MainWindow::on_pbStopScript_pressed()
 
 void MainWindow::on_pbExecScript_pressed()
 {
+    ui->pbEnableFB->setChecked(true);
+    openMV->updateFWVersion();
+
     openMV->scriptExec(ui->txScript->toPlainText().toUtf8());
 }
 

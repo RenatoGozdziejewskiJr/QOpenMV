@@ -40,7 +40,6 @@
 #define IS_GS(bpp)                      ((bpp) == 1)
 #define IS_BINARY(bpp)                  ((bpp) == 0)
 
-#define DEBUG_INFO 0
 
 class OpenMVCommand
 {
@@ -111,8 +110,6 @@ private:
     void processCommandResult(unsigned char cmd, QByteArray data);
     QByteArray pasrsePrintData(const QByteArray &data);
 
-
-
 signals:
     void sgnlCommandResult(QString result);  //resultado do comando enviado pela serial
     void sgnlFinished();   //finaliza thread
@@ -120,7 +117,6 @@ signals:
     void sgnlInfo(QString info); //message info thread
     void sgnlFrameBufferData(const QPixmap &data);
     void sgnlPrintData(const QByteArray &data);
-
 
 
 public slots:

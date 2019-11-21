@@ -528,12 +528,6 @@ void OpenMV::processCommand(const OpenMVCommand &command)
         //calcula um timeout para a escrita dos bytes conforme a qtde bytes a serem escritos
         m_serial->waitForBytesWritten(static_cast<int>(  m_serial->bytesToWrite()*10) );
 
-        //verifica se eh comando ou script. (obs.: não permite colocar script menor que 100 bytes... to.. do.. incluir cabeçalho com # comentarios.
-        if (bytesWritten < 100) {
-            if (DEBUG_INFO)
-                emit sgnlInfo(QString("command %1 sended successfully. Waiting response len %2").arg(mapaComandos[ static_cast<unsigned char>(command.m_data[1]) ] ).arg(QString::number(responseLen)) );
-        }
-
         response.clear();
         if (responseLen > 0){
             //aguarda resposta
@@ -551,13 +545,10 @@ void OpenMV::processCommand(const OpenMVCommand &command)
 
             if(response.size() >= responseLen)
             {
-                if (DEBUG_INFO)
-                    emit sgnlInfo(QString("command %1 received successfully. Processing...").arg(mapaComandos[ static_cast<unsigned char>(command.m_data[1]) ] ) );
                 processCommandResult(static_cast<unsigned char>(command.m_data[1]), response.left(command.m_responseLen));
             }
             else{
-                if (DEBUG_INFO)
-                    emit sgnlError(QString("command %1 receiving time out").arg(mapaComandos[ static_cast<unsigned char>(command.m_data[1]) ] ) );
+                emit sgnlError(QString("command %1 receiving time out").arg(mapaComandos[ static_cast<unsigned char>(command.m_data[1]) ] ) );
             }
         }
 
@@ -582,8 +573,7 @@ void OpenMV::processCommandResult(unsigned char cmd, QByteArray data)
             if ((0 < w) && (w < 32768) && (0 < h) && (h < 32768) && (0 <= bpp) && (bpp <= (1024 * 1024 * 1024)))
             {
                 int size = getImageSize(w, h, bpp);
-                if (DEBUG_INFO)
-                    emit sgnlInfo(QString("Frame Size: %1 - %2 - %3").arg(QString::number(w)).arg(QString::number(h)).arg(QString::number(bpp)));
+
 
                 if(size)
                 {
@@ -599,8 +589,7 @@ void OpenMV::processCommandResult(unsigned char cmd, QByteArray data)
                         serializeLong(buffer, new_size);
 
                         m_queue.enqueue(OpenMVCommand(buffer, new_size));
-                        if (DEBUG_INFO)
-                            emit sgnlInfo(QString("new size: %1  - i: %2").arg(QString::number(new_size)).arg(QString::number(i)));
+
                     }
 
                     m_frameSizeW = w;
@@ -714,7 +703,8 @@ void OpenMV::sltThreadMainLoop()
             //if FB is enabled then read FB and Text Buffer
             if (m_fbEnabled) {
                 getFrameBuffer();
-//                getTextBuffer();
+
+                //it doesnt need execute every loop
                 if(tmScanTextBuffer.hasExpired(100)) {
                     getTextBuffer();
                     tmScanTextBuffer.restart();
@@ -723,16 +713,13 @@ void OpenMV::sltThreadMainLoop()
 
             while(!m_queue.isEmpty()) {
                 cmd = m_queue.dequeue();
-                if (DEBUG_INFO)
-                    emit sgnlInfo(QString("______________ [%1]> Command [%2] - Queue Size[%3] ______________").arg(QTime::currentTime().toString("HH:mm:ss.zzz")).arg(mapaComandos[static_cast<unsigned char>(cmd.m_data[1])]).arg(QString::number(m_queue.count())));
                 processCommand(cmd);
             }         
         }
         m_mutex.unlock();
         qApp->processEvents();
-        //QThread::usleep(1);
     }
 
-    qDebug() << "finalizando...";
-    emit sgnlFinished();  //advice thread is finished
+    qDebug() << "finishing...";
+    emit sgnlFinished();  //signals thread is finished
 }
