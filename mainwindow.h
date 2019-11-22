@@ -19,7 +19,6 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    QThread *thread;
     OpenMV *openMV;
     QTimer *tmUpdate;
 

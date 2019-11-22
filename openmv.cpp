@@ -286,6 +286,20 @@ OpenMV::OpenMV(QObject *parent) : QObject(parent)
     mapaComandos.insert(USBDBG_TX_BUF_LEN             ,"USBDBG_TX_BUF_LEN");
     mapaComandos.insert(USBDBG_TX_BUF                 ,"USBDBG_TX_BUF");
 
+    thread = new QThread;
+
+    this->moveToThread(thread);
+    connect(thread, SIGNAL(started()), this, SLOT(sltThreadMainLoop()));
+    connect(this, SIGNAL(sgnlFinished()), thread, SLOT(quit()));
+    connect(this, SIGNAL(sgnlFinished()), this, SLOT(deleteLater()));
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+
+    thread->start();
+    //thread->setPriority(QThread::InheritPriority);
+    //thread->setPriority(QThread::HighPriority);
+    thread->setPriority(QThread::TimeCriticalPriority);
+
+
 }
 
 void OpenMV::setTerminate()

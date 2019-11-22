@@ -10,21 +10,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    thread = new QThread;
     openMV = new OpenMV();
-    openMV->moveToThread(thread);
     connect(openMV, SIGNAL(sgnlError(QString)), this, SLOT( sltHandleError(QString) ));
     connect(openMV, SIGNAL(sgnlInfo(QString)), this, SLOT(sltHandleInfo(QString)) );
-    connect(thread, SIGNAL(started()), openMV, SLOT(sltThreadMainLoop()));
-    connect(openMV, SIGNAL(sgnlFinished()), thread, SLOT(quit()));
-    connect(openMV, SIGNAL(sgnlFinished()), openMV, SLOT(deleteLater()));
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-
-    thread->start();
-    //thread->setPriority(QThread::InheritPriority);
-    //thread->setPriority(QThread::HighPriority);
-    thread->setPriority(QThread::TimeCriticalPriority);
-
     connect(openMV, SIGNAL(sgnlFrameBufferData(QPixmap)), this, SLOT(sltHandleFrameBuffer(QPixmap)));
     connect(openMV, SIGNAL(sgnlPrintData(QByteArray)), this, SLOT(sltHandleTextBuffer(QByteArray)));
 

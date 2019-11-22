@@ -72,6 +72,8 @@ public:
     bool getScriptIsRunning();
 
 private:
+    QThread *thread;
+
     QQueue<OpenMVCommand> m_queue;
     QSerialPort *m_serial;
 
