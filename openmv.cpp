@@ -302,6 +302,11 @@ OpenMV::OpenMV(QObject *parent) : QObject(parent)
 
 }
 
+OpenMV::~OpenMV()
+{
+
+}
+
 void OpenMV::setTerminate()
 {
     m_mutex.lock();

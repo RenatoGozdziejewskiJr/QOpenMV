@@ -55,6 +55,8 @@ class OpenMV : public QObject
     Q_OBJECT
 public:
     explicit OpenMV(QObject *parent = nullptr);
+    ~OpenMV();
+
 
     void scriptExec(const QByteArray &data);
     void scriptStop();
