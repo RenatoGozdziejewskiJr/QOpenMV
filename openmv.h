@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QtSerialPort>
 #include <QQueue>
+#include <QPixmap>
+#include <QTimer>
 
 //Constants and commands
 #define FRAME_SIZE_RESPONSE_LEN         12
@@ -65,13 +67,15 @@ public:
     void sysReset();
     void updateScriptIsRunning();
 
-    void setConnectCam();
-    void setDisconnectCam();
+    void openCam();
+    void closeCam();
 
     void setTerminate(); //always set to true
 
     QString getVersion();
     bool getScriptIsRunning();
+
+    QPixmap snapshot();
 
 private:
     QThread *thread;
@@ -84,6 +88,8 @@ private:
     QMap<qint16, QString> mapaComandos;
     QByteArray m_pixelBuffer;
     QByteArray m_lineBuffer;
+
+    QPixmap m_snapshot;
 
     //frame size
     int m_frameSizeW;
@@ -114,12 +120,14 @@ private:
     void processCommandResult(unsigned char cmd, QByteArray data);
     QByteArray pasrsePrintData(const QByteArray &data);
 
+
 signals:
     void sgnlCommandResult(QString result);  //resultado do comando enviado pela serial
     void sgnlFinished();   //finaliza thread
     void sgnlError(QString err);  //erro thread
     void sgnlInfo(QString info); //message info thread
     void sgnlFrameBufferData(const QPixmap &data);
+    void sgnlSnapshot();
     void sgnlPrintData(const QByteArray &data);
 
 

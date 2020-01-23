@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -82,6 +82,19 @@
         </property>
         <property name="text">
          <string>Exec Script</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pbSnapshot">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Snapshot</string>
         </property>
        </widget>
       </item>
@@ -180,7 +193,7 @@ while(True):
    <property name="minimumSize">
     <size>
      <width>500</width>
-     <height>111</height>
+     <height>188</height>
     </size>
    </property>
    <attribute name="dockWidgetArea">
@@ -190,6 +203,9 @@ while(True):
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QGraphicsView" name="graphicsView"/>
+     </item>
+     <item>
+      <widget class="QGraphicsView" name="snapshotView"/>
      </item>
     </layout>
    </widget>

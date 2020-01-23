@@ -40,6 +40,8 @@ private slots:
     void on_pbStopScript_pressed();
     void on_pbExecScript_pressed();
 
+    void on_pbSnapshot_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

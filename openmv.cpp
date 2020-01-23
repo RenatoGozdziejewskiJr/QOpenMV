@@ -253,6 +253,38 @@ QByteArray OpenMV::pasrsePrintData(const QByteArray &data)
     return buffer;
 }
 
+QPixmap OpenMV::snapshot()
+{
+    QTimer timeoutTimer;
+    QEventLoop loop;
+
+    //somente retorna se script estiver rodando
+    //somente retorna se cam estah conectada
+    //somente retorna se FB ativo
+
+    if (!m_fbEnabled) {
+          emit sgnlError(QString("Snapshot fail! FB is not enabled!"));
+    }
+
+    if (!m_scriptIsRunning) {
+          emit sgnlError(QString("Snapshot fail! Script is not running!"));
+    }
+
+    if (!m_serial->isOpen()) {
+          emit sgnlError(QString("Snapshot fail! Cam is not connected!"));
+    }
+
+    connect(this, SIGNAL(sgnlSnapshot()), &loop, SLOT(quit()));
+    connect(&timeoutTimer, SIGNAL(timeout()), &loop, SLOT(quit()));
+    timeoutTimer.start(1000);
+    loop.exec(); //blocks untill either theSignalToWaitFor or timeout was fired
+    if (!timeoutTimer.isActive()) {
+        emit sgnlError(QString("Snapshot timeout!"));
+    }
+    return m_snapshot;  //return the last image adquired
+
+}
+
 OpenMV::OpenMV(QObject *parent) : QObject(parent)
 {
     //inicializa objetos
@@ -321,17 +353,18 @@ QString OpenMV::getVersion()
 
 bool OpenMV::getScriptIsRunning()
 {
+    updateScriptIsRunning();
     return m_scriptIsRunning;
 }
 
-void OpenMV::setConnectCam()
+void OpenMV::openCam()
 {
     m_mutex.lock();
     m_connectCam = true;
     m_mutex.unlock();
 }
 
-void OpenMV::setDisconnectCam()
+void OpenMV::closeCam()
 {
     m_mutex.lock();
     m_disconnectCam = true;
@@ -391,7 +424,6 @@ bool OpenMV::connectCam()
 
         return true;
     }
-
 
 }
 
@@ -496,7 +528,6 @@ void OpenMV::updateScriptIsRunning()
     m_mutex.lock();
     m_queue.enqueue(OpenMVCommand(buffer, 4));
     m_mutex.unlock();
-
 }
 
 void OpenMV::getFrameBuffer()
@@ -529,7 +560,6 @@ void OpenMV::getTextBufferSize()
     serializeLong(buffer, 4);
     //coloca o comando na fila para processar
     m_queue.enqueue(OpenMVCommand(buffer, 4));
-
 }
 
 void OpenMV::processCommand(const OpenMVCommand &command)
@@ -559,7 +589,7 @@ void OpenMV::processCommand(const OpenMVCommand &command)
                     response.append(m_serial->readAll());
                 }
 
-                //emit sgnlInfo(QString("size: %1 el: %2 ").arg(QString::number(response.length())).arg(QString::number(elaspedTimer.elapsed())));
+                // emit sgnlInfo(QString("size: %1 el: %2 ").arg(QString::number(response.length())).arg(QString::number(elapsedTimer.elapsed())));
             }
             while((response.size() < responseLen) && (!elapsedTimer.hasExpired(m_readTimeOut)));
 
@@ -577,7 +607,6 @@ void OpenMV::processCommand(const OpenMVCommand &command)
 
 void OpenMV::processCommandResult(unsigned char cmd, QByteArray data)
 {
-
     int w;
     int h;
     int bpp;
@@ -593,7 +622,6 @@ void OpenMV::processCommandResult(unsigned char cmd, QByteArray data)
             if ((0 < w) && (w < 32768) && (0 < h) && (h < 32768) && (0 <= bpp) && (bpp <= (1024 * 1024 * 1024)))
             {
                 int size = getImageSize(w, h, bpp);
-
 
                 if(size)
                 {
@@ -622,13 +650,15 @@ void OpenMV::processCommandResult(unsigned char cmd, QByteArray data)
         case USBDBG_FRAME_DUMP:{
             m_pixelBuffer.append(data);
 
-            if(m_pixelBuffer.size() == getImageSize(m_frameSizeW, m_frameSizeH, m_frameSizeBPP))
+            if (m_pixelBuffer.size() == getImageSize(m_frameSizeW, m_frameSizeH, m_frameSizeBPP))
             {
-                QPixmap pixmap = getImageFromData(m_pixelBuffer, m_frameSizeW, m_frameSizeH, m_frameSizeBPP);
+                m_snapshot = getImageFromData(m_pixelBuffer, m_frameSizeW, m_frameSizeH, m_frameSizeBPP);
 
-                if(!pixmap.isNull())
+                if(!m_snapshot.isNull())
                 {
-                    emit sgnlFrameBufferData(pixmap);
+
+                    emit sgnlFrameBufferData(m_snapshot);
+                    emit sgnlSnapshot();
                 }
 
                 m_frameSizeW = int();
@@ -638,7 +668,8 @@ void OpenMV::processCommandResult(unsigned char cmd, QByteArray data)
             }
             break;
         }
-        case USBDBG_TX_BUF_LEN:{
+
+        case USBDBG_TX_BUF_LEN: {
             int len = deserializeLong(data);
 
             if(len)
@@ -734,10 +765,11 @@ void OpenMV::sltThreadMainLoop()
             while(!m_queue.isEmpty()) {
                 cmd = m_queue.dequeue();
                 processCommand(cmd);
-            }         
+            }
+
         }
         m_mutex.unlock();
-        qApp->processEvents();
+        //qApp->processEvents();
     }
 
     qDebug() << "finishing...";

@@ -36,15 +36,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::sltTimerUpdate()
 {
-    static int i = 0;
     static QString statusScript;
-    if (i >= 10) {
-        openMV->updateScriptIsRunning();
-        i = 0;
-    }
+
     statusScript = openMV->getScriptIsRunning()?"Running":"Not Running";
     lbStatusBarCaption->setText(QTime::currentTime().toString("hh:mm:ss")+ " :: "+statusScript);
-    i ++;
+
 }
 
 void MainWindow::sltHandleFrameBuffer(const QPixmap &data) {
@@ -94,15 +90,15 @@ void MainWindow::sltHandleInfo(QString info)
 
 void MainWindow::on_pbStop_pressed()
 {
-    openMV->setDisconnectCam();
+    openMV->closeCam();
 }
 
 void MainWindow::on_pbStart_pressed()
 {
-    openMV->setConnectCam();    
+    openMV->openCam();
 
     ui->pbEnableFB->setChecked(true);
-    openMV->updateFWVersion();
+
 
 }
 
@@ -121,16 +117,23 @@ void MainWindow::on_pbExecScript_pressed()
 {
     ui->pbEnableFB->setChecked(true);
     openMV->updateFWVersion();
-
     openMV->scriptExec(ui->txScript->toPlainText().toUtf8());
 }
 
 
+void MainWindow::on_pbSnapshot_clicked()
+{
+    QPixmap data;
+    data = openMV->snapshot();
 
+    if (ui->snapshotView->scene() == nullptr) {
+        ui->snapshotView->setScene(new QGraphicsScene(this));
+        ui->snapshotView->scene()->addItem(new QGraphicsPixmapItem());
+    }
+    //pega o primeiro objeto da scena que eh o pixmap criado
+    QGraphicsPixmapItem *pixmap = qgraphicsitem_cast<QGraphicsPixmapItem *>(ui->snapshotView->scene()->items().at(0));
 
+    pixmap->setPixmap( data );
+    ui->graphicsView->fitInView(pixmap, Qt::KeepAspectRatio);
 
-
-
-
-
-
+}
