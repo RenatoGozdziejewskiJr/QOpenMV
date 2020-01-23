@@ -69,7 +69,6 @@ void MainWindow::sltHandleTextBuffer(const QByteArray &data)
 
 }
 
-
 void MainWindow::sltHandleError(QString err)
 {
     //qDebug() << err;
@@ -96,10 +95,7 @@ void MainWindow::on_pbStop_pressed()
 void MainWindow::on_pbStart_pressed()
 {
     openMV->openCam();
-
     ui->pbEnableFB->setChecked(true);
-
-
 }
 
 void MainWindow::on_pbEnableFB_toggled(bool checked)
@@ -120,7 +116,6 @@ void MainWindow::on_pbExecScript_pressed()
     openMV->scriptExec(ui->txScript->toPlainText().toUtf8());
 }
 
-
 void MainWindow::on_pbSnapshot_clicked()
 {
     QPixmap data;
@@ -135,5 +130,4 @@ void MainWindow::on_pbSnapshot_clicked()
 
     pixmap->setPixmap( data );
     ui->graphicsView->fitInView(pixmap, Qt::KeepAspectRatio);
-
 }
