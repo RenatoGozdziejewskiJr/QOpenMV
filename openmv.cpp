@@ -487,7 +487,7 @@ void OpenMV::sysReset()
     m_mutex.unlock();
 }
 
-bool OpenMV::updateScriptIsRunning()
+void OpenMV::updateScriptIsRunning()
 {
     QByteArray buffer;
     serializeByte(buffer, USBDBG_CMD);
@@ -496,6 +496,7 @@ bool OpenMV::updateScriptIsRunning()
     m_mutex.lock();
     m_queue.enqueue(OpenMVCommand(buffer, 4));
     m_mutex.unlock();
+
 }
 
 void OpenMV::getFrameBuffer()

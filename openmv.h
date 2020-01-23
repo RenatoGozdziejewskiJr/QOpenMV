@@ -63,7 +63,7 @@ public:
     void enableFB(bool enabled);
     void updateFWVersion();
     void sysReset();
-    bool updateScriptIsRunning();
+    void updateScriptIsRunning();
 
     void setConnectCam();
     void setDisconnectCam();
