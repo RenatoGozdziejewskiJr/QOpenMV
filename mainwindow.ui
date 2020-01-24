@@ -99,6 +99,19 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="pbSnapshot_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Run Free</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -193,7 +206,7 @@ while(True):
    <property name="minimumSize">
     <size>
      <width>500</width>
-     <height>188</height>
+     <height>430</height>
     </size>
    </property>
    <attribute name="dockWidgetArea">
@@ -202,10 +215,36 @@ while(True):
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <widget class="QGraphicsView" name="graphicsView"/>
+      <widget class="QGraphicsView" name="graphicsView">
+       <property name="minimumSize">
+        <size>
+         <width>256</width>
+         <height>192</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="QGraphicsView" name="snapshotView"/>
+      <widget class="QGraphicsView" name="snapshotView">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>

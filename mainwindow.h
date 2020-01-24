@@ -33,6 +33,8 @@ private slots:
     void sltHandleFrameBuffer(const QPixmap &data);
     void sltHandleTextBuffer(const QByteArray &data);
 
+    void runFree();
+
     void on_pbStop_pressed();
     void on_pbStart_pressed();
     void on_pbEnableFB_toggled(bool checked);
@@ -41,6 +43,8 @@ private slots:
     void on_pbExecScript_pressed();
 
     void on_pbSnapshot_clicked();
+
+    void on_pbSnapshot_2_clicked();
 
 private:
     Ui::MainWindow *ui;

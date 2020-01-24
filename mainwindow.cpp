@@ -69,6 +69,31 @@ void MainWindow::sltHandleTextBuffer(const QByteArray &data)
 
 }
 
+void MainWindow::runFree()
+{
+    int countFrames = 0;
+    int FPS = 0;
+    QElapsedTimer elTimer;
+
+
+    elTimer.start();
+    while (true) {
+
+        on_pbSnapshot_clicked();
+
+        countFrames++;
+        if (elTimer.hasExpired(1000)){
+            FPS = countFrames;
+
+            qDebug() << FPS;
+            countFrames = 0;
+            elTimer.restart();
+        }
+        qApp->processEvents();
+    }
+
+}
+
 void MainWindow::sltHandleError(QString err)
 {
     //qDebug() << err;
@@ -96,6 +121,7 @@ void MainWindow::on_pbStart_pressed()
 {
     openMV->openCam();
     ui->pbEnableFB->setChecked(true);
+    openMV->updateFWVersion();
 }
 
 void MainWindow::on_pbEnableFB_toggled(bool checked)
@@ -125,9 +151,15 @@ void MainWindow::on_pbSnapshot_clicked()
         ui->snapshotView->setScene(new QGraphicsScene(this));
         ui->snapshotView->scene()->addItem(new QGraphicsPixmapItem());
     }
+
     //pega o primeiro objeto da scena que eh o pixmap criado
     QGraphicsPixmapItem *pixmap = qgraphicsitem_cast<QGraphicsPixmapItem *>(ui->snapshotView->scene()->items().at(0));
 
     pixmap->setPixmap( data );
-    ui->graphicsView->fitInView(pixmap, Qt::KeepAspectRatio);
+    ui->snapshotView->fitInView(pixmap, Qt::KeepAspectRatio);
+}
+
+void MainWindow::on_pbSnapshot_2_clicked()
+{
+    runFree();
 }
